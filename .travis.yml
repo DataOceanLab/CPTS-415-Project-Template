@@ -1,0 +1,15 @@
+os:
+  - linux
+dist: xenial
+language: scala
+jdk:
+  - openjdk8
+
+install:
+  - wget https://archive.apache.org/dist/spark/spark-3.0.1/spark-3.0.1-bin-hadoop2.7.tgz
+  - tar -xzf spark-3.0.1-bin-hadoop2.7.tgz
+  - rm spark-3.0.1-bin-hadoop2.7.tgz
+
+script:
+  - sbt assembly
+  - ./spark-3.0.1-bin-hadoop2.7/bin/spark-submit target/scala-2.12/CPTS-415-Project-assembly-0.1.0.jar
