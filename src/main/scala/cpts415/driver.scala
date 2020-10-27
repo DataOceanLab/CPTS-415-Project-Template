@@ -1,6 +1,7 @@
 package cpts415
 
 import org.apache.log4j.{Level, Logger}
+import org.apache.spark.SparkFiles
 import org.apache.spark.graphx.util.GraphGenerators
 import org.apache.spark.graphx.{Graph, VertexId}
 import org.apache.spark.sql.{SaveMode, SparkSession}
@@ -20,15 +21,17 @@ object driver {
     val spark = SparkSession
       .builder()
       .appName("cpts415-bigdata")
-      .config("spark.some.config.option", "some-value").master("local[*]")
+      .config("spark.some.config.option", "some-value")//.master("local[*]")
       .getOrCreate()
-
+    spark.sparkContext.addFile("https://raw.githubusercontent.com/DataOceanLab/CPTS-415-Project-Template/main/data/users.csv")
+    spark.sparkContext.addFile("https://raw.githubusercontent.com/DataOceanLab/CPTS-415-Project-Template/main/data/relationships.csv")
 
     /**
      * Load CSV file into Spark SQL
      */
-    var users = spark.read.options(Map("inferSchema"->"true","delimiter"->",","header"->"true")).csv("data/users.csv")
-    var relationships = spark.read.options(Map("inferSchema"->"true","delimiter"->",","header"->"true")).csv("data/relationships.csv")
+    // You can replace the path in .csv() to any local path or HDFS path
+    var users = spark.read.options(Map("inferSchema"->"true","delimiter"->",","header"->"true")).csv(SparkFiles.get("users.csv"))
+    var relationships = spark.read.options(Map("inferSchema"->"true","delimiter"->",","header"->"true")).csv(SparkFiles.get("relationships.csv"))
     users.createOrReplaceTempView("users")
     relationships.createOrReplaceTempView("relationships")
     users.show()
